@@ -1,0 +1,14 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+<form method="POST">
+    <h1> Register</h1>
+    {% csrf_token %}
+    {{form}}
+ <input type="submit">
+    <div>
+        <p>Already got an account?</p>
+        <a href="{% url 'login' %}">Login here</a>
+    </div>
+    </form>
+{% endblock %}
