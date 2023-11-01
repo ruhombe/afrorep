@@ -1,0 +1,27 @@
+
+<!DOCTYPE html>
+{% load static %}
+<html>
+    <head>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1">
+<link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css">
+<meta charset="utf-8">
+<link rel="shortcut icon" type="images/png" href="{% static 'images/favicon.png' %}">
+<link href="{% static 'fontawesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
+<link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/masonry/4.2.2/masonry.pkgd.min.js"></script>
+<title>AfroRep</title>
+<meta name="author" content="">
+    </head>    
+<body>
+<main>
+    <header>
+        <h1>header</h1>
+    </header>
+        {% block content %}
+    
+        {% endblock content %}
+        </main>
+    </body>
+</html>
