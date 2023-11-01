@@ -25,6 +25,10 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 #from .utils import 
+
+##  amin username: afro
+## password: Afrorep1
+
 def register(request):
     form = CreateUserForm()
     if request.method == 'POST':
@@ -59,8 +63,10 @@ def loginUser(request):
         if user is not None:
             
             login(request, user)
+            print("logged in")
             return redirect('home')
         else:
+            print("not logged in")
             messages.info(request, 'username or password is  incorrect')
     context={}
     return render(request, 'login.html', context)
