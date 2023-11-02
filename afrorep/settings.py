@@ -153,5 +153,5 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'email'
-EMAIL_HOST_PASSWORD ='allow app password'
+EMAIL_HOST_PASSWORD ='allowed webapps pass'
 #######################END SITE EMAIL
