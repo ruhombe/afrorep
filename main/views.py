@@ -1,8 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import Profiles
 from django.db.models import Q
-from .forms import CreateUserForm
-# Create your views here.
+from .forms import CreateUserForm, ProfileForm # Create your views here.
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.contrib import messages
@@ -25,22 +24,23 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 #from .utils import 
-
+from django.contrib.auth.models import User
 ##  amin username: afro
-## password: Afrorep1
+## password: Afrorep14
 
 def register(request):
     form = CreateUserForm()
     if request.method == 'POST':
-        form = CreateUserForm(request.POST)
+        form = CreateUserForm(request.POST or None, request.FILES or None)
         if form.is_valid():
             user = form.save()
+            photo=form.cleaned_data.get('photo')
             username= form.cleaned_data.get('username')
             phone= form.cleaned_data.get('phone')
             address = form.cleaned_data.get('address')
             country =form.cleaned_data.get('country').lower()
-            #create customer
-            Profiles.objects.create(user=user,phone=phone, country=country, address=address, name=username, email=user.email)
+            #create User Profile
+            Profiles.objects.create(user=user,phone=phone,first_name=user.first_name, last_name=user.last_name, country=country, address=address, profile_image=photo, user_name=username, email=user.email)
             user = authenticate(username=username, password=form.cleaned_data.get('password1'))
             if user is not None:
                 login(request, user)
@@ -57,16 +57,11 @@ def loginUser(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        
         user = authenticate(request, username=username, password=password)
-        
         if user is not None:
-            
             login(request, user)
-            print("logged in")
             return redirect('home')
         else:
-            print("not logged in")
             messages.info(request, 'username or password is  incorrect')
     context={}
     return render(request, 'login.html', context)
@@ -75,6 +70,32 @@ def loginUser(request):
 def logoutUser(request):
     logout(request)
     return redirect('home')
+
+
+@login_required
+def update_profile(request,id):
+    user = request.user
+    profile = Profiles.objects.get(id=id)
+    form = ProfileForm(request.POST or None, request.FILES or None, instance=profile)
+    if form.is_valid():
+        profile=form.save(commit=False)
+        user.first_name = profile.first_name
+        user.last_name = profile.last_name
+        user.username = profile.user_name
+        user.email = profile.email
+        user.save()
+        profile.save()
+        context={'form':form,}
+        return redirect('home')
+    else:
+        messages.info(request, ' Sorry!! Something went wrong')
+        context={'form':form}
+    context={'form':form,  'user':user}
+    return render(request, 'profile.html', context)
+
+
+
+
 
 def home(request):
     context={}
