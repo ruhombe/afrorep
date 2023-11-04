@@ -12,11 +12,18 @@ from django.dispatch import receiver
 from ckeditor.fields import RichTextField
 
 class Profiles(models.Model):
-    user =  models.OneToOneField(User, on_delete=models.CASCADE,  null=True, blank=True)
-    name = models.CharField(max_length=200, null=True, blank=True)
+    user =  models.OneToOneField(User, on_delete=models.CASCADE,  null=True, blank=True, related_name="profile")
+    profile_image = models.ImageField(blank=True, null=True, upload_to='images')
+    first_name =  models.CharField(max_length=200, null=True, blank=True)
+    last_name = models.CharField(max_length=200, null=True, blank=True)
+    user_name = models.CharField(max_length=200, null=True, blank=True)
     country = models.CharField(max_length=200, null=True, blank=True)
     email = models.CharField(max_length=200, null=True, blank=True)
     phone = models.CharField(max_length=200, null=True, blank=True)
     address = models.TextField(max_length=200,null=True, blank=True)
     def __str__(self):
-        return self.name
+        return self.user_name
+    
+    
+    
+    

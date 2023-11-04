@@ -18,7 +18,14 @@
 <main>
     <header>
         <h1>header</h1>
-        <a href="/">home</a>
+<a href="/">home</a>
+{% if user.id is not None %}
+<a href="{% url 'logout' %}">logout</a>
+<a href="/profile/{{request.user.profile.id}}">My Profile</a>
+{% else %}
+<a href="{% url 'login' %}" >login</a>
+<a href="{% url 'register' %}">register</a>
+{% endif %}
     </header>
         {% block content %}
     

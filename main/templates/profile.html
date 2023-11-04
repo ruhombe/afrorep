@@ -1,0 +1,24 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+<h1>User Profiles</h1>
+<section>
+    <h2>Profile information</h2>
+
+</section>
+<hr>
+<section>
+    <h3>update profile  Info</h3>
+    <form enctype="multipart/form-data" method="POST">
+        {% csrf_token %}
+        {{form.as_p}}
+        <input type="submit">
+        <style>
+            #id_user,
+            label[for="id_user"] {
+                display: none;
+            }
+        </style>
+    </form>
+</section>
+{% endblock %}

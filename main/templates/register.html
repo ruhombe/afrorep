@@ -1,7 +1,7 @@
 {% extends 'main.html' %}
 {% load static %}
 {% block content %}
-<form method="POST">
+<form  enctype="multipart/form-data"  method="POST">
     <h1> Register</h1>
     {% csrf_token %}
     {{form}}
