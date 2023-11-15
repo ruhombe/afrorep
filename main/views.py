@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Profiles,Portfolio
+from .models import Profiles,Portfolio,SkillCategory,Skills,UserSkill,About,Experience
 from django.db.models import Q
 from .forms import CreateUserForm, ProfileForm, PortfolioForm # Create your views here.
 from django.shortcuts import render, get_object_or_404
@@ -100,6 +100,31 @@ def update_profile(request,id):
 
 
 
+
 def home(request):
-    context={}
+    skill_categories = SkillCategory.objects.all()
+
+    context = {'skill_categories': skill_categories}
     return render(request, 'home.html', context)
+
+
+
+
+
+@login_required
+def handle_skill_selection(request):
+    if request.method == 'POST':
+        selected_skill_ids = request.POST.getlist('selected_skills')
+        user = request.user  # Assuming the user is logged in
+
+        # Clear existing user skills (optional, depending on your requirements)
+        UserSkill.objects.filter(user=user).delete()
+
+        # Add selected skills to the user
+        for skill_id in selected_skill_ids:
+            skill = Skills.objects.get(id=skill_id)
+            UserSkill.objects.create(user=user, skill=skill)
+
+        return redirect('home')  # Redirect to the user's profile or another page
+    else:
+        return redirect('home')  #
