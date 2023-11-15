@@ -4,7 +4,7 @@ from django.utils.safestring import mark_safe
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User
 from django.forms import inlineformset_factory
-from .models import Profiles
+from .models import Profiles, Portfolio 
 
 class CreateUserForm(UserCreationForm):
     photo = forms.ImageField()
@@ -21,6 +21,12 @@ class ProfileForm(UserChangeForm):
     class Meta:
         model = Profiles
         fields= '__all__'
+
+class PortfolioForm(forms.ModelForm):
+    class Meta:
+        model = Portfolio
+        fields = '__all__'
+
 
 
 

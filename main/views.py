@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
-from .models import Profiles
+from .models import Profiles,Portfolio
 from django.db.models import Q
-from .forms import CreateUserForm, ProfileForm # Create your views here.
+from .forms import CreateUserForm, ProfileForm, PortfolioForm # Create your views here.
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.contrib import messages
@@ -72,10 +72,13 @@ def logoutUser(request):
     return redirect('home')
 
 
+
+
 @login_required
 def update_profile(request,id):
     user = request.user
     profile = Profiles.objects.get(id=id)
+    #portfolio = Portfolio.objects.get(id=id)
     form = ProfileForm(request.POST or None, request.FILES or None, instance=profile)
     if form.is_valid():
         profile=form.save(commit=False)

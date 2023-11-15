@@ -1,24 +1,167 @@
 {% extends 'main.html' %}
 {% load static %}
 {% block content %}
-<h1>User Profiles</h1>
-<section>
-    <h2>Profile information</h2>
+<section class="profile-main-section">
+     <div class="user-intro-tile">
+        <div class="user-intro-tile-wrapper">
+            <div class="user-intro-tile-wrapper-header">
+            <div class="user-intro-tile-image">
+                <img src="{{request.user.profile.imageURL}}" alt="">
+            </div>
+
+            <div class="user-intro-tile-content">
+                <span id="skill-tag">3d artist</span>
+                <h1>{{request.user.profile.first_name}} {{ request.user.profile.last_name}}</h1>
+                <div class="address-container">
+                    <h2>@{{request.user.profile.user_name}}</h2>
+                    <div class="address">
+                    <span>{{request.user.profile.city}}, {{request.user.profile.country}}</span>
+                    <span id="dot"></span>
+                    <span>joined {{request.user.profile.date_joined}}</span>
+                    <span id="dot"></span>
+                    <span>{{request.user.profile.website}}</span>
+                    </div>
+                </div>
+                <div class="first-btns-wrapper">
+                    <div class="social_buttons">
+                        <button><a href="">Be</a></button>
+                        <button><a href="">Bt</a></button>
+                        <button><a href=""> <i class="fa fa-linkedin"></i> </a></button>
+                        <button><a href=""> <i class="fa fa-youtube"></i> </a></button>
+                    </div>
+                    <div class="nxt_buttons">
+                        <button><i class="fa fa-heart"></i>follow</button>
+                        <button>Send Message</button>
+                    </div>
+
+                </div>
+            </div>
+           </div>
+        </div>
+        <div class="user-intro-tile-footer">
+            <div class="user-intro-tile-footer-btns-wrapper">
+            <button class="tab-btn active-btn" >Portfolio</button>
+            <button class="tab-btn">Courses</button>
+            <button class="tab-btn">Edit Profile</button>
+            <button class="tab-btn">Groups</button>
+            <button class="tab-btn">Followers</button>
+        </div>
+        </div>
+    </div>
+
+<section class="tab active-tab" id="portfolio-tab">
+    <div class="timeline">
+
+        <div class="Portfolio">
+            <div class="about">
+                <h1 style="color: white;">Portfolio</h1>
+            </div>
+            <div class="photos">
+                <h2 style="color: white;">photos</h2>
+            </div>
+            <div class="reviews">
+                <h3 style="color: white;">reviews</h3>
+            </div>
+            <div class="comment_form">
+                <h3 style="color: white;">form</h3>
+            </div>
+        </div>
+    </div>
 
 </section>
-<hr>
-<section>
-    <h3>update profile  Info</h3>
-    <form enctype="multipart/form-data" method="POST">
-        {% csrf_token %}
-        {{form.as_p}}
-        <input type="submit">
-        <style>
-            #id_user,
-            label[for="id_user"] {
-                display: none;
-            }
-        </style>
-    </form>
+<style>
+    #portfolio-tab{
+        display: flex;
+        width: 100%;
+        align-items: flex-start;
+        gap: 20px;
+}
+    .timeline{
+        display: flex;
+        width: 67%;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+        flex-shrink: 0;
+    }
+
+    .portfolio{
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+        align-self: stretch;
+    }
+    .about{
+        display: flex;
+        width: 780px;
+        padding: 60px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 80px;
+        margin-bottom: 20px;
+        border-radius: 25px;
+        background: var(--design-lab-grey-dark, #2D333C);
+
+    }
+    .photos{
+        display: flex;
+        padding: 60px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+        align-self: stretch;
+        margin-bottom: 20px;
+        border-radius: 25px;
+        background: var(--design-lab-grey-dark, #2D333C);
+    }
+    .reviews{
+        display: flex;
+        padding: 60px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 80px;
+        margin-bottom: 20px;
+        align-self: stretch;
+        border-radius: 25px;
+        background: var(--design-lab-grey-dark, #2D333C);
+
+    }
+    .comment_form{
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 20px;
+        align-self: stretch;
+        border-radius: 25px;
+        background: var(--design-lab-grey-dark, #2D333C);
+    }
+</style>
+<section class="tab">
+<h6 style="color: white;">courses</h6>
 </section>
+<section class="tab">
+<h6 style="color: white;">profile</h6>
+<h3 style="color: white;">update profile  Info</h3>
+<form enctype="multipart/form-data" method="POST">
+    {% csrf_token %}
+    {{form.as_p}}
+    <input type="submit">
+    <style>
+        #id_user,
+        label[for="id_user"] {
+            display: none;
+        }
+    </style>
+</form>
+</section>
+<section class="tab">
+<h6 style="color: white;">groups</h6>
+</section>
+<section class="tab">
+    <h6 style="color: white;">followers</h6>
+</section>
+
+</section>
+
 {% endblock %}

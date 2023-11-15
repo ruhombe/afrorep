@@ -5,6 +5,7 @@
     <head>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1">
 <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css">
+<link href="{% static 'css/profile_page.css' %}" rel="stylesheet" type="text/css">
 <meta charset="utf-8">
 <link rel="shortcut icon" type="images/png" href="{% static 'images/favicon.png' %}">
 <link href="{% static 'fontawesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
@@ -17,7 +18,6 @@
 <body>
 <main>
     <header>
-        <h1>header</h1>
 <a href="/">home</a>
 {% if user.id is not None %}
 <a href="{% url 'logout' %}">logout</a>
@@ -31,5 +31,7 @@
     
         {% endblock content %}
         </main>
+        <script type="text/javascript" src="{% static 'js/button_activity.js' %}"></script>
+        
     </body>
 </html>
