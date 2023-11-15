@@ -42,12 +42,21 @@ class Profiles(models.Model):
         return mark_safe('<img src="{}" width="50" height="50"/>'.format(self.imageURL))
   
         image_tag.short_description = 'Image'
-    
-class Skills(models.Model):
-    skill = models.CharField(max_length=200, null=True, blank=True)
+
+
+class SkillCategory(models.Model):
+    name = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
-        return self.skill
+        return self.name
+
+
+class Skills(models.Model):
+    skill = models.CharField(max_length=200, null=True, blank=True)
+    category = models.ForeignKey(SkillCategory, on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.skill} ({self.category})" if self.category else self.skill
 
 
 class UserSkill(models.Model):
@@ -62,6 +71,7 @@ class UserSkill(models.Model):
 class About(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name="about")
     bio = models.TextField(max_length=5000, null=True, blank=True)
+
     def __str__(self):
         return self.user.username
     
