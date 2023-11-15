@@ -1,39 +1,5 @@
 {% extends 'main.html' %}
 {% load static %}
 {% block content %}
-<h1>welcome home</h1>
-<!-- skill_list.html -->
-
-<!-- home.html -->
-
-<!-- home.html -->
-
-<!-- home.html -->
-<!-- home.html -->
-
-<form method="post" action="{% url 'handle_skill_selection' %}">
-    {% csrf_token %}
-
-    {% for category in skill_categories %}
-        <h3 style="color: orangered;">{{ category.name }}</h3>
-
-        <ul>
-            {% for skill in category.skills_set.all %}
-                <li>
-                    <label>
-                        <input type="checkbox" name="selected_skills" value="{{ skill.id }}">
-                        <span style="color: white">{{ skill.skill }}</span>
-                    </label>
-                </li>
-            {% endfor %}
-        </ul>
-    {% endfor %}
-
-    <button type="submit">Submit</button>
-</form>
-
-
-
-
-  
+<h1 style="color: white;">welcome home</h1>
 {% endblock %}

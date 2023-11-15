@@ -50,8 +50,8 @@
     </div>
 
 <section class="tab active-tab" id="portfolio-tab">
+    <h2 style="color: white;">portfolio</h2>
     <div class="timeline">
-
         <div class="Portfolio">
             <div class="about">
                 <h1 style="color: white;">Portfolio</h1>
@@ -69,6 +69,7 @@
     </div>
 
 </section>
+<!--
 <style>
     #portfolio-tab{
         display: flex;
@@ -136,12 +137,36 @@
         border-radius: 25px;
         background: var(--design-lab-grey-dark, #2D333C);
     }
-</style>
+</style>-->
 <section class="tab">
 <h6 style="color: white;">courses</h6>
 </section>
 <section class="tab">
-<h6 style="color: white;">profile</h6>
+<h6 style="color: white;">profile and updates</h6>
+<h2 style="color: white;">Choose your skilss</h2>
+
+<form method="post" action="{% url 'handle_skill_selection' %}">
+    {% csrf_token %}
+
+    {% for category in skill_categories %}
+        <h3 style="color: orangered;">{{ category.name }}</h3>
+
+        <ul>
+            {% for skill in category.skills_set.all %}
+                <li>
+                    <label>
+                        <input type="checkbox" name="selected_skills" value="{{ skill.id }}">
+                        <span style="color: white">{{ skill.skill }}</span>
+                    </label>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+
+    <button type="submit">Submit</button>
+</form>
+
+
 <h3 style="color: white;">update profile  Info</h3>
 <form enctype="multipart/form-data" method="POST">
     {% csrf_token %}
