@@ -10,6 +10,7 @@ from django.urls import reverse
 from django.db.models.signals import pre_save, post_delete
 from django.dispatch import receiver
 from ckeditor.fields import RichTextField
+from django.core.exceptions import ValidationError
 from datetime import date
 
 class Profiles(models.Model):
@@ -77,7 +78,7 @@ class About(models.Model):
     
 
 class Experience(models.Model):
-    user =  models.OneToOneField(User, on_delete=models.CASCADE,  null=True, blank=True, related_name="skills")
+    user =  models.ForeignKey(User, on_delete=models.CASCADE,  null=True, blank=True, related_name="skills")
     position_title = models.CharField(max_length=200, null=True, blank=True)
     company = models.CharField(max_length=200, null=True, blank=True)
     description = models.TextField(max_length=7000,null=True, blank=True)
@@ -89,7 +90,7 @@ class Experience(models.Model):
 
         
 class Portfolio(models.Model):
-    user =  models.OneToOneField(User, on_delete=models.CASCADE,  null=True, blank=True, related_name="portfolio")
+    user =  models.ForeignKey(User, on_delete=models.CASCADE,  null=True, blank=True, related_name="portfolio")
     title = models.CharField(max_length=200, null=True, blank=True)
     description =models.TextField(max_length=4000,null=True, blank=True)
     image_one =  models.ImageField(blank=True, null=True, upload_to='images')
@@ -97,5 +98,31 @@ class Portfolio(models.Model):
     image_three =  models.ImageField(blank=True, null=True, upload_to='images')
     image_four =  models.ImageField(blank=True, null=True, upload_to='images')
 
+    def __str__(self):
+        return self.user.username
+
+
+class Review(models.Model):
+    reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='given_reviews')
+    target_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_reviews')
+    text = models.TextField()
+    rating = models.IntegerField(default=5)  # You can customize the rating field as needed
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def clean(self):
+        if self.reviewer == self.target_user:
+            raise ValidationError("A user cannot give themselves a review.")
+
+    def __str__(self):
+        return f"Review from {self.reviewer.username} to {self.target_user.username}"
+    
+
+class Courses(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_courses')
+    course_title = models.CharField(max_length=1000,null=True, blank=True)
+    course_description = models.TextField(max_length=5000,null=True, blank=True)
+    course_link = models.URLField(null=True, blank=True)
+
+    
     def __str__(self):
         return self.user.username

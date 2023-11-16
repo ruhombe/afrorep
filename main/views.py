@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Profiles,Portfolio,SkillCategory,Skills,UserSkill,About,Experience
+from .models import Profiles,Portfolio,SkillCategory,Skills,UserSkill,About,Experience,Review
 from django.db.models import Q
 from .forms import CreateUserForm, ProfileForm, PortfolioForm # Create your views here.
 from django.shortcuts import render, get_object_or_404
@@ -72,29 +72,44 @@ def logoutUser(request):
 
 
 
+#@login_required
+#def update_profile(request, id):
+#    user = get_object_or_404(User, id=id)
+#    profile = Profiles.objects.get(id=id)
+#    form = ProfileForm(request.POST or None, request.FILES or None, instance=profile)
 
-@login_required
-def update_profile(request,id):
-    user = request.user
-    profile = Profiles.objects.get(id=id)
-    form = ProfileForm(request.POST or None, request.FILES or None, instance=profile)
-    if form.is_valid():
-        profile=form.save(commit=False)
-        user.first_name = profile.first_name
-        user.last_name = profile.last_name
-        user.username = profile.user_name
-        user.email = profile.email
-        user.save()
-        profile.save()
-        context={'form':form,}
-        return redirect('home')
-    else:
-        messages.info(request, ' Sorry!! Something went wrong')
-        context={'form':form}
+#    if request.method == 'POST':
+#        if form.is_valid():
+#            profile = form.save(commit=False)
+#            user.first_name = profile.first_name
+#            user.last_name = profile.last_name
+#            user.username = profile.user_name
+#            user.email = profile.email
+#            user.save()
+#            profile.save()
+#            messages.success(request, 'Profile updated successfully')
+#            return redirect('home')
+#        else:
+#            messages.error(request, 'Sorry!! Something went wrong')
 
-    skill_categories = SkillCategory.objects.all()
-    context={'form':form,  'user':user, 'skill_categories':skill_categories}
-    return render(request, 'profile.html', context)
+#    skill_categories = SkillCategory.objects.all()
+#    context = {'form': form, 'user': user, 'skill_categories': skill_categories}
+#    return render(request, 'profile.html', context)
+
+def user_profile(request, id):
+    user = get_object_or_404(User, id=id)
+    try:
+        profile = Profiles.objects.get(user=user)
+        skill_categories = SkillCategory.objects.all()
+        user_skills = UserSkill.objects.filter(user=user)
+        chosen_categories = set(user_skill.skill.category for user_skill in user_skills)
+        about_user = About.objects.filter(user=user)
+        user_experience = Experience.objects.filter(user=user)
+        context = {'user': user, 'about_user':about_user, 'user_experience':user_experience, 'profile': profile, 'skill_categories': skill_categories, 'user_skills':user_skills, 'chosen_categories':chosen_categories}
+        return render(request, 'profile.html', context)
+    except Profiles.DoesNotExist:
+        # Handle the case where the user has no profile
+        return render(request, 'profile_not_found.html')
 
 
 
@@ -102,10 +117,10 @@ def update_profile(request,id):
 
 
 def home(request):
-    #skill_categories = SkillCategory.objects.all()
-
-    context = {}
+    profiles = User.objects.all()
+    context = {'profiles': profiles}
     return render(request, 'home.html', context)
+
 
 
 
@@ -123,3 +138,23 @@ def handle_skill_selection(request):
         return redirect('home')  # Redirect to the user's profile or another page
     else:
         return redirect('home')  #
+    
+
+
+def get_reviews_for_user(username):
+    user = get_object_or_404(User, username=username)
+
+    reviews = Review.objects.filter(target_user=user)
+
+    reviews_data = []
+
+    for review in reviews:
+        reviewer_name = f"{review.reviewer.first_name} {review.reviewer.last_name}"
+        reviews_data.append({
+            'reviewer_name': reviewer_name,
+            'text': review.text,
+            'rating': review.rating,
+            'created_at': review.created_at,
+        })
+
+    return reviews_data

@@ -11,15 +11,15 @@
 
             <div class="user-intro-tile-content">
                 <span id="skill-tag">3d artist</span>
-                <h1>{{request.user.profile.first_name}} {{ request.user.profile.last_name}}</h1>
+                <h1>{{profile.first_name}} {{ profile.last_name}}</h1>
                 <div class="address-container">
-                    <h2>@{{request.user.profile.user_name}}</h2>
+                    <h2>@{{profile.user_name}}</h2>
                     <div class="address">
-                    <span>{{request.user.profile.city}}, {{request.user.profile.country}}</span>
+                    <span>{{profile.city}}, {{profile.country}}</span>
                     <span id="dot"></span>
-                    <span>joined {{request.user.profile.date_joined}}</span>
+                    <span>joined {{profile.date_joined}}</span>
                     <span id="dot"></span>
-                    <span>{{request.user.profile.website}}</span>
+                    <span>{{profile.website}}</span>
                     </div>
                 </div>
                 <div class="first-btns-wrapper">
@@ -50,11 +50,40 @@
     </div>
 
 <section class="tab active-tab" id="portfolio-tab">
-    <h2 style="color: white;">portfolio</h2>
+    <h2 style="color: white;">Portfolio Tab</h2>
     <div class="timeline">
         <div class="Portfolio">
             <div class="about">
-                <h1 style="color: white;">Portfolio</h1>
+                <h2 style="color:white">About Freelancer</h2>
+                <div style="color: white;">
+                    {% for rs in about_user %}
+                    {{rs.bio | linebreaks }}
+                    {% endfor %}
+                </div>
+
+                <h1 style="color: white;">Skills</h1>
+                {% for category in chosen_categories %}
+                <h3 style="color:grey">{{ category.name }}</h3>
+                <ul>
+                    {% for user_skill in user_skills %}
+                        {% if user_skill.skill.category == category %}
+                            <li style="color: green">{{ user_skill.skill.skill }}</li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% endfor %}
+    <h2 style="color:white">Work Experience</h2>
+    {% for rs in user_experience %}
+    <h3 style="color:orangered">{{rs.start_date}} - {{rs.end_date}}</h3>
+<h2 style="color:rgb(243, 243, 243)">{{rs.position_title}}</h2>
+<h3 style="color:grey">{{rs.company}}</h3>
+<p style="color:white">
+    {{rs.description}}
+</p>
+
+    {% endfor %}
+    <hr>
+
             </div>
             <div class="photos">
                 <h2 style="color: white;">photos</h2>
