@@ -4,7 +4,7 @@ from django.utils.safestring import mark_safe
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User
 from django.forms import inlineformset_factory
-from .models import Profiles, Portfolio, Experience, About 
+from .models import Profiles, Portfolio, Experience, About ,Review
 
 class CreateUserForm(UserCreationForm):
     photo = forms.ImageField()
@@ -37,3 +37,10 @@ class AboutForm(forms.ModelForm):
         model = About
         fields = '__all__'
 
+
+class ReviewForm(forms.ModelForm):
+    target_user = forms.IntegerField(widget=forms.HiddenInput())
+    class Meta:
+        model = Review
+        fields = ['text', 'rating']
+        

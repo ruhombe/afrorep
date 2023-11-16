@@ -10,16 +10,18 @@
             </div>
 
             <div class="user-intro-tile-content">
-                <span id="skill-tag">3d artist</span>
+                <span id="skill-tag">3d artist {{profile.user.id}}</span>
                 <h1>{{profile.first_name}} {{ profile.last_name}}</h1>
                 <div class="address-container">
                     <h2>@{{profile.user_name}}</h2>
                     <div class="address">
                     <span>{{profile.city}}, {{profile.country}}</span>
                     <span id="dot"></span>
-                    <span>joined {{profile.date_joined}}</span>
+                    <span>joined {{ profile.date_joined|date:"F j, Y" }}</span>
                     <span id="dot"></span>
-                    <span>{{profile.website}}</span>
+                    {% for rs in about_user %}
+                    <span>{{rs.website}}</span>
+                    {% endfor %}
                     </div>
                 </div>
                 <div class="first-btns-wrapper">
@@ -90,9 +92,25 @@
             </div>
             <div class="reviews">
                 <h3 style="color: white;">reviews</h3>
+                {% for rs in user_reviews %}
+                <h4 style="color:orangered">{{rs.reviewer}}</h4>
+                <img src="{{rs.reviewer.profile.imageURL}}" alt="" height="50" width="80">
+                <h4 style="color:orangered">{{rs.created_at|date:"j F, Y"}}</h4>
+                <div style="color: #4CAF50;">
+                     {{rs.text|linebreaks}}
+                </div>
+                {% endfor %}
             </div>
             <div class="comment_form">
-                <h3 style="color: white;">form</h3>
+                <h3 style="color: white;">Add review form</h3>
+                <form enctype="multipart/form-data" method="POST" >
+                    {% csrf_token %}
+                    {{ review_form.as_p }}
+                    <input type="hidden" name="target_user" value="{{profile.user.id}}">
+                    <input type="submit">
+                </form>
+                
+
             </div>
         </div>
     </div>

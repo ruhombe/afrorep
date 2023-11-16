@@ -109,9 +109,9 @@ class Review(models.Model):
     rating = models.IntegerField(default=5)  # You can customize the rating field as needed
     created_at = models.DateTimeField(auto_now_add=True)
     
-    def clean(self):
-        if self.reviewer == self.target_user:
-            raise ValidationError("A user cannot give themselves a review.")
+    #def clean(self):
+    #    if self.reviewer == self.target_user:
+    #        raise ValidationError("A user cannot give themselves a review.")
 
     def __str__(self):
         return f"Review from {self.reviewer.username} to {self.target_user.username}"

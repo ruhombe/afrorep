@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.contrib import admin
-from .models import  Profiles, Portfolio, UserSkill,Skills, SkillCategory, About, Experience
+from .models import  Profiles, Portfolio, UserSkill,Skills, SkillCategory, About, Experience, Review
 from django_mptt_admin.admin import DjangoMpttAdmin
 from mptt.admin import DraggableMPTTAdmin
 from django.utils.html import format_html
@@ -16,3 +16,4 @@ admin.site.register(UserSkill)
 admin.site.register(Portfolio)
 admin.site.register(About)
 admin.site.register(Experience)
+admin.site.register(Review)

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import Profiles,Portfolio,SkillCategory,Skills,UserSkill,About,Experience,Review
 from django.db.models import Q
-from .forms import CreateUserForm, ProfileForm, PortfolioForm # Create your views here.
+from .forms import CreateUserForm, ProfileForm, PortfolioForm,ReviewForm # Create your views here.
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.contrib import messages
@@ -98,6 +98,7 @@ def logoutUser(request):
 
 def user_profile(request, id):
     user = get_object_or_404(User, id=id)
+    review_form = ReviewForm()
     try:
         profile = Profiles.objects.get(user=user)
         skill_categories = SkillCategory.objects.all()
@@ -105,7 +106,26 @@ def user_profile(request, id):
         chosen_categories = set(user_skill.skill.category for user_skill in user_skills)
         about_user = About.objects.filter(user=user)
         user_experience = Experience.objects.filter(user=user)
-        context = {'user': user, 'about_user':about_user, 'user_experience':user_experience, 'profile': profile, 'skill_categories': skill_categories, 'user_skills':user_skills, 'chosen_categories':chosen_categories}
+        user_reviews = Review.objects.filter(target_user=user)
+        if request.method == "POST":
+            review_form = ReviewForm(request.POST)
+            if review_form.is_valid():
+                # Extract the target_user_id from the form's cleaned data
+                text_data = review_form.cleaned_data.get('text')
+                rating_data = review_form.cleaned_data.get('rating')
+                reviewer_data = request.user
+                target_user_id = review_form.cleaned_data.get('target_user')
+                target_user_data = get_object_or_404(User, id=target_user_id)
+                review = review_form.save(commit=False)
+                review.reviewer=reviewer_data
+                review.target_user =target_user_data
+                review.text=text_data
+                review.rating=rating_data
+                review.save()
+                return redirect('profile', id=target_user_id)
+            else:
+                return JsonResponse({'error': 'Ooops! Something went wrong!'}, status=400)
+        context = {'user': user, 'about_user':about_user, 'review_form':review_form, 'user_reviews':user_reviews, 'user_experience':user_experience, 'profile': profile, 'skill_categories': skill_categories, 'user_skills':user_skills, 'chosen_categories':chosen_categories}
         return render(request, 'profile.html', context)
     except Profiles.DoesNotExist:
         # Handle the case where the user has no profile
