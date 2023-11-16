@@ -22,8 +22,6 @@ class Profiles(models.Model):
     country = models.CharField(max_length=200, null=True, blank=True)
     email = models.CharField(max_length=200, null=True, blank=True)
     phone = models.CharField(max_length=200, null=True, blank=True)
-    address = models.TextField(max_length=200,null=True, blank=True)
-    website = models.URLField( null=True, blank=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return self.user_name
@@ -72,6 +70,7 @@ class UserSkill(models.Model):
 class About(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name="about")
     bio = models.TextField(max_length=5000, null=True, blank=True)
+    website = models.URLField( null=True, blank=True)
 
     def __str__(self):
         return self.user.username

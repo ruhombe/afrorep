@@ -4,7 +4,7 @@ from django.utils.safestring import mark_safe
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User
 from django.forms import inlineformset_factory
-from .models import Profiles, Portfolio 
+from .models import Profiles, Portfolio, Experience, About 
 
 class CreateUserForm(UserCreationForm):
     photo = forms.ImageField()
@@ -13,7 +13,7 @@ class CreateUserForm(UserCreationForm):
     address = forms.CharField()
     class Meta:
         model = User
-        fields = ['first_name','last_name', 'photo', 'username',  'email', 'country', 'phone', 'address', 'password1', 'password2']
+        fields = ['first_name','last_name', 'photo', 'username',  'email', 'country', 'phone', 'password1', 'password2']
 
 
 
@@ -27,6 +27,13 @@ class PortfolioForm(forms.ModelForm):
         model = Portfolio
         fields = '__all__'
 
+class ExperienceForm(forms.ModelForm):
+    class Meta:
+        model = Experience
+        fields='__all__'
 
-
+class AboutForm(forms.ModelForm):
+    class Meta:
+        model = About
+        fields = '__all__'
 

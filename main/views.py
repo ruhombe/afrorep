@@ -37,10 +37,9 @@ def register(request):
             photo=form.cleaned_data.get('photo')
             username= form.cleaned_data.get('username')
             phone= form.cleaned_data.get('phone')
-            address = form.cleaned_data.get('address')
             country =form.cleaned_data.get('country').lower()
             #create User Profile
-            Profiles.objects.create(user=user,phone=phone,first_name=user.first_name, last_name=user.last_name, country=country, address=address, profile_image=photo, user_name=username, email=user.email)
+            Profiles.objects.create(user=user,phone=phone,first_name=user.first_name, last_name=user.last_name, country=country, profile_image=photo, user_name=username, email=user.email)
             user = authenticate(username=username, password=form.cleaned_data.get('password1'))
             if user is not None:
                 login(request, user)
@@ -78,7 +77,6 @@ def logoutUser(request):
 def update_profile(request,id):
     user = request.user
     profile = Profiles.objects.get(id=id)
-    #portfolio = Portfolio.objects.get(id=id)
     form = ProfileForm(request.POST or None, request.FILES or None, instance=profile)
     if form.is_valid():
         profile=form.save(commit=False)

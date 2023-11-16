@@ -145,26 +145,54 @@
 <h6 style="color: white;">profile and updates</h6>
 <h2 style="color: white;">Choose your skilss</h2>
 
+<!-- skill_selection.html -->
+
+<!-- skill_selection.html -->
+
 <form method="post" action="{% url 'handle_skill_selection' %}">
     {% csrf_token %}
 
     {% for category in skill_categories %}
         <h3 style="color: orangered;">{{ category.name }}</h3>
 
-        <ul>
-            {% for skill in category.skills_set.all %}
-                <li>
-                    <label>
-                        <input type="checkbox" name="selected_skills" value="{{ skill.id }}">
-                        <span style="color: white">{{ skill.skill }}</span>
-                    </label>
-                </li>
-            {% endfor %}
-        </ul>
+        {% if category.skills_set.all %}
+            <ul>
+                {% for skill in category.skills_set.all %}
+                    <li>
+                        <label>
+                            <input type="checkbox" name="selected_skills" value="{{ skill.id }}">
+                            <span style="color: white">{{ skill.skill }}</span>
+                        </label>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% if category.subcategories.all %}
+            <ul>
+                {% for subcategory in category.subcategories.all %}
+                    <li>
+                        <h4 style="color: #4CAF50;">{{ subcategory.name }}</h4>
+                        <ul>
+                            {% for skill in subcategory.skills_set.all %}
+                                <li>
+                                    <label>
+                                        <input type="checkbox" name="selected_skills" value="{{ skill.id }}">
+                                        <span style="color: white">{{ skill.skill }}</span>
+                                    </label>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
     {% endfor %}
 
     <button type="submit">Submit</button>
 </form>
+
+
 
 
 <h3 style="color: white;">update profile  Info</h3>
