@@ -45,6 +45,7 @@ class Profiles(models.Model):
 
 
 class SkillCategory(models.Model):
+    parent = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='subcategories')
     name = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
