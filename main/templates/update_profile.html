@@ -1,0 +1,80 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+<h3 style="color: aliceblue;">Update Profile Information</h3>
+<div>
+    <h3 style="color: orangered;">Personal info</h3>
+    <form enctype="multipart/form-data" method="POST" id="user_info">
+        {% csrf_token %}
+        {{form.as_p}}
+        <input type="submit">
+        <style>
+            #id_user,
+            label[for="id_user"] {
+                display: none;
+            }
+        </style>
+    </form>
+</div>
+<hr>
+<div>
+    <h3 style="color: orangered;">About info</h3>
+    <form enctype="multipart/form-data" method="POST">
+        {% csrf_token %}
+        {{about_form.as_p}}
+        <input type="submit">
+    </form>
+</div>
+<hr>
+<div>
+    <h3 style="color: orangered;">experinece</h3>
+    <div>
+        {% for rs in experiences %}
+        <h3 style="color:white;">{{rs.position_title}}</h3>
+        <h3 style="color:white">{{rs.comapny}}</h3>
+        <p style="color:white">{{rs.description}}</p>
+        <h3 style="color:white">{{rs.start_date}}</h3>
+        <h3 style="color:white">{{rs.end_date}} {{rs.id}}</h3>
+        <form method="post">
+            <button type="submit">Delete Experience</button>
+        </form>
+        {% endfor %}
+
+    </div>
+    <form enctype="multipart/form-data" method="POST">
+        {% csrf_token %}
+        {{experience_form.as_p}}
+        <input type="submit">
+    </form>
+</div>
+<hr>
+<div>
+    <h3 style="color: orangered;">Add a skill</h3>
+    <div>
+        {% for rs in portfolios %}
+        <h3 style="color:white;">{{rs.title}}</h3>
+        <h3 style="color:white">{{rs.description}}</h3>
+        <img src="{{rs.imageURL}}" alt="" height="80" width="100">
+        <h3 style="color:white">{{rs.image.id}}</h3>
+        <form method="post">
+            <button type="submit">Delete Portfolio</button>
+        </form>
+        {% endfor %}
+    </div>
+
+    <form enctype="multipart/form-data" method="POST">
+  
+    </form>
+</div>
+<hr>
+<style>
+    div{
+        color:white
+    }.helptext{
+        display:none
+    }#id_password{
+        display:none
+    }
+
+</style>
+{% endblock %}

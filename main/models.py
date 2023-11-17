@@ -93,13 +93,45 @@ class Portfolio(models.Model):
     user =  models.ForeignKey(User, on_delete=models.CASCADE,  null=True, blank=True, related_name="portfolio")
     title = models.CharField(max_length=200, null=True, blank=True)
     description =models.TextField(max_length=4000,null=True, blank=True)
-    image_one =  models.ImageField(blank=True, null=True, upload_to='images')
-    image_two =  models.ImageField(blank=True, null=True, upload_to='images')
-    image_three =  models.ImageField(blank=True, null=True, upload_to='images')
-    image_four =  models.ImageField(blank=True, null=True, upload_to='images')
-
+    image =  models.ImageField(blank=True, null=True, upload_to='images')
+    
     def __str__(self):
         return self.user.username
+    
+    @property
+    def imageURL(self):
+        try:
+            url = self.image.url
+        except:
+            url = ''
+        return url
+    
+    def image_tag(self):
+        return mark_safe('<img src="{}" width="50" height="50"/>'.format(self.imageURL))
+    
+        image_tag.short_description = 'Image'
+
+
+
+class PortfolioImages(models.Model):
+    portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE, default=000)
+    image =  models.ImageField(blank=True, null=True, upload_to='images')
+    def __str__(self):
+        return str(self.portfolio.title)
+    
+    @property
+    def imageURL(self):
+        try:
+            url = self.image.url
+        except:
+            url = ''
+        return url
+    
+    def image_tag(self):
+        return mark_safe('<img src="{}" width="50" height="50"/>'.format(self.imageURL))
+    
+        image_tag.short_description = 'Image'
+    
 
 
 class Review(models.Model):
@@ -109,10 +141,6 @@ class Review(models.Model):
     rating = models.IntegerField(default=5)  # You can customize the rating field as needed
     created_at = models.DateTimeField(auto_now_add=True)
     
-    #def clean(self):
-    #    if self.reviewer == self.target_user:
-    #        raise ValidationError("A user cannot give themselves a review.")
-
     def __str__(self):
         return f"Review from {self.reviewer.username} to {self.target_user.username}"
     

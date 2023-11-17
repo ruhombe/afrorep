@@ -33,6 +33,7 @@
                     </div>
                     <div class="nxt_buttons">
                         <button><i class="fa fa-heart"></i>follow</button>
+                        <button><a href="/update_user_profile/{{profile.id}}" style="text-decoration: none; color: white;">Edit Profile</a></button>
                         <button>Send Message</button>
                     </div>
 
@@ -69,27 +70,102 @@
                 <ul>
                     {% for user_skill in user_skills %}
                         {% if user_skill.skill.category == category %}
-                            <li style="color: green">{{ user_skill.skill.skill }}</li>
+                        <form class="delete-skill-form{{user_skill.id}}" method="POST" action="{% url 'delete_user_skill' skill_id=user_skill.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="skill_id" value="{{ user_skill.id }}">
+                            <li style="color: green" class="skillz{{user_skill.id}}">{{ user_skill.skill.skill }}/{{user_skill.id}}</li>
+                            <button type="button" class="delete-skill{{user_skill.id}} btn{{user_skill.id}}">x</button>
+                        </form>
+                        <script>
+                            $(document).ready(function () {
+                                $(".delete-skill{{user_skill.id}}").click(function () {
+                                    var form = $(this).closest('.delete-skill-form{{user_skill.id}}');
+                                    $.ajax({
+                                        type: form.attr('method'),
+                                        url: form.attr('action'),
+                                        data: form.serialize(),
+                                        success: function (data) {
+                                            $(".skillz{{user_skill.id}}").remove();
+                                            $(".btn{{user_skill.id}}").remove();
+                                        },
+                                        error: function (error) {
+                                            console.error("Error deleting skill:", error.responseText);
+                                        }
+                                    });
+                                });
+                            });
+                            </script>
                         {% endif %}
                     {% endfor %}
+  
                 </ul>
             {% endfor %}
     <h2 style="color:white">Work Experience</h2>
     {% for rs in user_experience %}
-    <h3 style="color:orangered">{{rs.start_date}} - {{rs.end_date}}</h3>
+    <form class="delete-experience-form{{rs.id}}" method="POST" action="{% url 'delete_user_experience' experience_id=rs.id %}">
+        {% csrf_token %}
+        <input type="hidden" name="experience_id" value="{{ rs.id }}">
+<h3 style="color:orangered">{{rs.start_date}} - {{rs.end_date}}</h3>
 <h2 style="color:rgb(243, 243, 243)">{{rs.position_title}}</h2>
 <h3 style="color:grey">{{rs.company}}</h3>
 <p style="color:white">
     {{rs.description}}
 </p>
-
+<button type="button" class="delete-experience{{rs.id}} btn{{rs.id}}">Remove experience</button>
+</form>
+<script>
+    $(document).ready(function () {
+        $(".delete-experience{{rs.id}}").click(function () {
+            var form = $(this).closest('.delete-experience-form{{rs.id}}');
+            $.ajax({
+                type: form.attr('method'),
+                url: form.attr('action'),
+                data: form.serialize(),
+                success: function (data) {
+                    $(".delete-experience-form{{rs.id}}").remove();
+                },
+                error: function (error) {
+                    console.error("Error deleting experience:", error.responseText);
+                }
+            });
+        });
+    });
+    </script>
     {% endfor %}
     <hr>
-
             </div>
             <div class="photos">
-                <h2 style="color: white;">photos</h2>
+                <h2 style="color: white;">Portfolio</h2>
+                {% for rs in user_portfolio %}
+                <form class="delete-portfolio-form{{rs.id}}" method="POST" action="{% url 'delete_user_portfolio' portfolio_id=rs.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="portfolio_id" value="{{ rs.id }}">
+                <a href="">
+                    <img src="{{rs.imageURL}}" alt="" height="80" width="100">
+                </a>
+                <button type="button" class="delete-portfolio{{rs.id}} btn{{rs.id}}">Remove</button>
+                </form>
+                <script>
+                    $(document).ready(function () {
+                        $(".delete-portfolio{{rs.id}}").click(function () {
+                            var form = $(this).closest('.delete-portfolio-form{{rs.id}}');
+                            $.ajax({
+                                type: form.attr('method'),
+                                url: form.attr('action'),
+                                data: form.serialize(),
+                                success: function (data) {
+                                    $(".delete-portfolio-form{{rs.id}}").remove();
+                                },
+                                error: function (error) {
+                                    console.error("Error deleting portfolio:", error.responseText);
+                                }
+                            });
+                        });
+                    });
+                    </script>
+                {% endfor %}
             </div>
+            <hr>
             <div class="reviews">
                 <h3 style="color: white;">reviews</h3>
                 {% for rs in user_reviews %}
@@ -101,6 +177,7 @@
                 </div>
                 {% endfor %}
             </div>
+            <hr>
             <div class="comment_form">
                 <h3 style="color: white;">Add review form</h3>
                 <form enctype="multipart/form-data" method="POST" >
