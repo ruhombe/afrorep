@@ -27,7 +27,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 ##  amin username: afro
 ## password: Afrorep14
-
+####################################################REGISTRATION AND LOGIN
 def register(request):
     form = CreateUserForm()
     if request.method == 'POST':
@@ -69,8 +69,7 @@ def loginUser(request):
 def logoutUser(request):
     logout(request)
     return redirect('home')
-
-
+######################################################################END REGISTRATION AND LOGIN
 
 @login_required
 def update_user_profile(request, id):
@@ -168,7 +167,6 @@ def user_profile(request, id):
         if request.method == "POST":
             review_form = ReviewForm(request.POST)
             if review_form.is_valid():
-                # Extract the target_user_id from the form's cleaned data
                 text_data = review_form.cleaned_data.get('text')
                 rating_data = review_form.cleaned_data.get('rating')
                 reviewer_data = request.user
@@ -194,7 +192,7 @@ def home(request):
     context = {'profiles': profiles}
     return render(request, 'home.html', context)
 
-#############select skill
+############################################################select skill
 @login_required
 def handle_skill_selection(request):
     if request.method == 'POST':
@@ -209,7 +207,7 @@ def handle_skill_selection(request):
     else:
         messages.success(request, 'Skill not saved! Something went wrong')
    
-###################return  reviews given to user
+########################################################################return  reviews given to user
 def get_reviews_for_user(username):
     user = get_object_or_404(User, username=username)
     reviews = Review.objects.filter(target_user=user)
