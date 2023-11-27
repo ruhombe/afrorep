@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
-from .models import Profiles,Portfolio,SkillCategory,Skills,UserSkill,About,Experience,Review
+from .models import Profiles,Portfolio,SkillCategory,Skills,UserSkill,About,Experience,Review, PortfolioImages
 from django.db.models import Q
-from .forms import CreateUserForm, ProfileForm, PortfolioForm,ReviewForm , AboutForm, ExperienceForm # Create your views here.
+from .forms import CreateUserForm, ProfileForm, PortfolioForm,ReviewForm , AboutForm, PortfolioImagesFormSet, ExperienceForm # Create your views here.
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.contrib import messages
@@ -82,22 +82,71 @@ def update_user_profile(request, id):
     about_form = AboutForm(request.POST or None, request.FILES or None, instance=abouts)
     experiences = Experience.objects.filter(user=user)
     portfolios=Portfolio.objects.filter(user=user)
-    Experience_form = ExperienceForm(request.POST or None, request.FILES or None, instance=user)
+    experience_form = ExperienceForm()
+    portfolio_form = PortfolioForm()
+    image_formset = PortfolioImagesFormSet()
     if request.method == 'POST':
-        if form.is_valid():
-            profile = form.save(commit=False)
-            user.first_name = profile.first_name
-            user.last_name = profile.last_name
-            user.username = profile.user_name
-            user.email = profile.email
-            user.save()
-            profile.save()
-            messages.success(request, 'Profile updated successfully')
-            return redirect('profile', id=profile.user.id)
+        #save portfolio data
+        if "profile" in request.POST:
+            if form.is_valid():
+                profile = form.save(commit=False)
+                user.first_name = profile.first_name
+                user.last_name = profile.last_name
+                user.username = profile.user_name
+                user.email = profile.email
+                user.save()
+                profile.save()
+                messages.success(request, 'Profile updated successfully')
+                return redirect('profile', id=profile.user.id)
+            else:
+                messages.error(request, 'Sorry!! Something went wrong. Try again')
+        #update or create about data
+        elif 'about' in request.POST:
+            if about_form.is_valid():
+                about_form.save()
+                messages.success(request, 'About info updated successfully')
+                return redirect('profile', id=profile.user.id)
+            else:
+                messages.error(request, 'Sorry!! Something went wrong. Try again')
+        ##save experience data 
+        elif 'experience' in request.POST:
+            experience_form=ExperienceForm(request.POST)
+            if experience_form.is_valid():
+                position_data = experience_form.cleaned_data.get('position_title')
+                company_data = experience_form.cleaned_data.get('company')
+                description_data = experience_form.cleaned_data.get('description')
+                start_date_data = experience_form.cleaned_data.get('start_date')
+                end_date_data = experience_form.cleaned_data.get('end_date')
+                experience = experience_form.save(commit=False)
+                experience.user = request.user
+                experience.position_title = position_data
+                experience.company = company_data
+                experience.description = description_data
+                experience.start_date = start_date_data
+                experience.end_date = end_date_data
+                experience.save()
+                messages.success(request, 'Experience Added successfully')
+                return redirect('profile', id=profile.user.id)
+            else:  
+                messages.error(request, 'Sorry!! Something went wrong. Try again')
+        #save portfolio data:
+        elif 'portfolio' in request.POST:
+            portfolio_form = PortfolioForm(request.POST or None, request.FILES or None)
+            image_formset = PortfolioImagesFormSet(request.POST or None, request.FILES or None)
+            if portfolio_form.is_valid() and image_formset.is_valid(): 
+                port = portfolio_form.save(commit=False)
+                port.user=request.user
+                port.save()
+                image_formset.instance=port
+                image_formset.save()
+                messages.success(request, 'Portfolio Added successfully')
+                return redirect('profile', id=profile.user.id)
         else:
-            messages.error(request, 'Sorry!! Something went wrong. Try again')
+            messages.success(request, 'invalid submition!')
+            print("dindt save")
+            return redirect('profile', id=profile.user.id)
     skill_categories = SkillCategory.objects.all()
-    context = {'form': form, 'user': user, 'portfolios':portfolios, 'about_form':about_form,'experiences':experiences, 'experience_form':Experience_form, 'skill_categories': skill_categories}
+    context = {'form': form, 'user': user, 'portfolios':portfolios, 'portfolio_form':portfolio_form, 'portfolio_image_formset':image_formset, 'about_form':about_form,'experiences':experiences, 'experience_form':experience_form, 'skill_categories': skill_categories}
     return render(request, 'update_profile.html', context)
 
 
@@ -106,12 +155,15 @@ def user_profile(request, id):
     review_form = ReviewForm()
     try:
         profile = Profiles.objects.get(user=user)
+       
         skill_categories = SkillCategory.objects.all()
         user_skills = UserSkill.objects.filter(user=user)
         chosen_categories = set(user_skill.skill.category for user_skill in user_skills)
         about_user = About.objects.filter(user=user)
         user_experience = Experience.objects.filter(user=user)
         user_portfolio = Portfolio.objects.filter(user=user)
+        portfolio_link = Portfolio.objects.get(user=user)
+        extra_images = PortfolioImages.objects.filter(portfolio=portfolio_link)
         user_reviews = Review.objects.filter(target_user=user)
         if request.method == "POST":
             review_form = ReviewForm(request.POST)
@@ -131,7 +183,7 @@ def user_profile(request, id):
                 return redirect('profile', id=target_user_id)
             else:
                 return JsonResponse({'error': 'Ooops! Something went wrong!'}, status=400)
-        context = {'user': user, 'about_user':about_user, 'review_form':review_form,'user_portfolio':user_portfolio, 'user_reviews':user_reviews, 'user_experience':user_experience, 'profile': profile, 'skill_categories': skill_categories, 'user_skills':user_skills, 'chosen_categories':chosen_categories}
+        context = {'user': user, 'about_user':about_user,'extra_images':extra_images, 'review_form':review_form,'user_portfolio':user_portfolio, 'user_reviews':user_reviews, 'user_experience':user_experience, 'profile': profile, 'skill_categories': skill_categories, 'user_skills':user_skills, 'chosen_categories':chosen_categories}
         return render(request, 'profile.html', context)
     except Profiles.DoesNotExist:
         return render(request, 'profile_not_found.html')
@@ -142,20 +194,22 @@ def home(request):
     context = {'profiles': profiles}
     return render(request, 'home.html', context)
 
-
+#############select skill
 @login_required
 def handle_skill_selection(request):
     if request.method == 'POST':
         selected_skill_ids = request.POST.getlist('selected_skills')
         user = request.user
+        profile= Profiles.objects.get(user=user)
         for skill_id in selected_skill_ids:
             skill = Skills.objects.get(id=skill_id)
             UserSkill.objects.create(user=user, skill=skill)
-        return redirect('home') #for now
+        messages.success(request, 'Skill Added successfully')
+        return redirect('profile', id=profile.user.id) #for now
     else:
-        return redirect('home') #for now
+        messages.success(request, 'Skill not saved! Something went wrong')
    
-
+###################return  reviews given to user
 def get_reviews_for_user(username):
     user = get_object_or_404(User, username=username)
     reviews = Review.objects.filter(target_user=user)
@@ -173,26 +227,40 @@ def get_reviews_for_user(username):
 
 ###################DELETE A SKILL
 def delete_user_skill(request, skill_id):
+    user=request.user
     user_skill = get_object_or_404(UserSkill, id=skill_id)
+    profile= Profiles.objects.get(user=user)
     if user_skill.user == request.user:
         user_skill.delete()
-        return JsonResponse({'message': 'Skill deleted successfully.'})
+        messages.success(request, 'Experience Deleted successfully')
+        return redirect('profile', id=profile.user.id) 
     else:
-        return JsonResponse({'error': 'Unauthorized'}, status=403)
+        messages.success(request, 'Skill Deleted successfully')
+        return redirect('profile', id=profile.user.id) 
 
-
+##################delete experience
 def delete_user_experience(request, experience_id):
+    user=request.user
     user_experience = get_object_or_404(Experience, id=experience_id)
+    profile= Profiles.objects.get(user=user)
     if user_experience.user == request.user:
         user_experience.delete()
-        return JsonResponse({'message': 'Experience deleted successfully.'})
+        messages.success(request, 'Experience Deleted successfully')
+        return redirect('profile', id=profile.user.id) 
     else:
-        return JsonResponse({'error': 'Unauthorized'}, status=403)
-
+        messages.success(request, 'Experience Deleted successfully')
+        return redirect('profile', id=profile.user.id) 
+    
+###########################delete portfolio
 def delete_user_portfolio(request, portfolio_id):
+    user= request.user
     user_portfolio = get_object_or_404(Portfolio, id=portfolio_id)
+    profile= Profiles.objects.get(user=user)
     if user_portfolio.user == request.user:
         user_portfolio.delete()
-        return JsonResponse({'message': 'Portfolio deleted successfully.'})
+        messages.success(request, 'Portfolio Deleted successfully')
+        return redirect('profile', id=profile.user.id) 
     else:
-        return JsonResponse({'error': 'Unauthorized'}, status=403)
+        messages.success(request, 'Unauthorized')
+        return redirect('profile', id=profile.user.id) 
+        #return JsonResponse({'error': 'Unauthorized'}, status=403)

@@ -33,7 +33,10 @@
                     </div>
                     <div class="nxt_buttons">
                         <button><i class="fa fa-heart"></i>follow</button>
+                        {% if request.user.is_authenticated %}
                         <button><a href="/update_user_profile/{{profile.id}}" style="text-decoration: none; color: white;">Edit Profile</a></button>
+                        {% else %}
+                        {% endif %}
                         <button>Send Message</button>
                     </div>
 
@@ -142,6 +145,13 @@
                     <input type="hidden" name="portfolio_id" value="{{ rs.id }}">
                 <a href="">
                     <img src="{{rs.imageURL}}" alt="" height="80" width="100">
+                    
+                    <div>
+                        <p>portfolio extra image</p>
+                    {% for rs in extra_images  %}
+                        <img src="{{ rs.imageURL }}" alt="EXTRA IMAGE" height="40" width="40">
+                    {% endfor %}
+                    </div>
                 </a>
                 <button type="button" class="delete-portfolio{{rs.id}} btn{{rs.id}}">Remove</button>
                 </form>
@@ -266,71 +276,7 @@
 <h6 style="color: white;">courses</h6>
 </section>
 <section class="tab">
-<h6 style="color: white;">profile and updates</h6>
-<h2 style="color: white;">Choose your skilss</h2>
 
-<!-- skill_selection.html -->
-
-<!-- skill_selection.html -->
-
-<form method="post" action="{% url 'handle_skill_selection' %}">
-    {% csrf_token %}
-
-    {% for category in skill_categories %}
-        <h3 style="color: orangered;">{{ category.name }}</h3>
-
-        {% if category.skills_set.all %}
-            <ul>
-                {% for skill in category.skills_set.all %}
-                    <li>
-                        <label>
-                            <input type="checkbox" name="selected_skills" value="{{ skill.id }}">
-                            <span style="color: white">{{ skill.skill }}</span>
-                        </label>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-
-        {% if category.subcategories.all %}
-            <ul>
-                {% for subcategory in category.subcategories.all %}
-                    <li>
-                        <h4 style="color: #4CAF50;">{{ subcategory.name }}</h4>
-                        <ul>
-                            {% for skill in subcategory.skills_set.all %}
-                                <li>
-                                    <label>
-                                        <input type="checkbox" name="selected_skills" value="{{ skill.id }}">
-                                        <span style="color: white">{{ skill.skill }}</span>
-                                    </label>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    {% endfor %}
-
-    <button type="submit">Submit</button>
-</form>
-
-
-
-
-<h3 style="color: white;">update profile  Info</h3>
-<form enctype="multipart/form-data" method="POST">
-    {% csrf_token %}
-    {{form.as_p}}
-    <input type="submit">
-    <style>
-        #id_user,
-        label[for="id_user"] {
-            display: none;
-        }
-    </style>
-</form>
 </section>
 <section class="tab">
 <h6 style="color: white;">groups</h6>
