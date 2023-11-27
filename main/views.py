@@ -161,8 +161,9 @@ def user_profile(request, id):
         about_user = About.objects.filter(user=user)
         user_experience = Experience.objects.filter(user=user)
         user_portfolio = Portfolio.objects.filter(user=user)
-        portfolio_link = Portfolio.objects.get(user=user)
-        extra_images = PortfolioImages.objects.filter(portfolio=portfolio_link)
+        extra_images=[]
+        for portfolio in user_portfolio:
+            extra_images = PortfolioImages.objects.filter(portfolio=portfolio)
         user_reviews = Review.objects.filter(target_user=user)
         if request.method == "POST":
             review_form = ReviewForm(request.POST)

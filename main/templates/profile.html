@@ -77,7 +77,12 @@
                             {% csrf_token %}
                             <input type="hidden" name="skill_id" value="{{ user_skill.id }}">
                             <li style="color: green" class="skillz{{user_skill.id}}">{{ user_skill.skill.skill }}/{{user_skill.id}}</li>
+                            {% if user_skill.user == request.user %}
                             <button type="button" class="delete-skill{{user_skill.id}} btn{{user_skill.id}}">x</button>
+                            {% else %}
+
+                            {% endif %}
+                            
                         </form>
                         <script>
                             $(document).ready(function () {
@@ -114,7 +119,11 @@
 <p style="color:white">
     {{rs.description}}
 </p>
+{% if rs.user == request.user %}
 <button type="button" class="delete-experience{{rs.id}} btn{{rs.id}}">Remove experience</button>
+{% else %}
+
+{% endif %}
 </form>
 <script>
     $(document).ready(function () {
@@ -147,13 +156,17 @@
                     <img src="{{rs.imageURL}}" alt="" height="80" width="100">
                     
                     <div>
-                        <p>portfolio extra image</p>
+                        <p>portfolio extra image{{rs.user}}</p>
                     {% for rs in extra_images  %}
                         <img src="{{ rs.imageURL }}" alt="EXTRA IMAGE" height="40" width="40">
                     {% endfor %}
                     </div>
                 </a>
+                {% if rs.user == request.user %}
                 <button type="button" class="delete-portfolio{{rs.id}} btn{{rs.id}}">Remove</button>
+                {% else %}
+
+                {% endif %}
                 </form>
                 <script>
                     $(document).ready(function () {
