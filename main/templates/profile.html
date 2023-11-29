@@ -1,24 +1,303 @@
 {% extends 'main.html' %}
 {% load static %}
 {% block content %}
-<h1>User Profiles</h1>
-<section>
-    <h2>Profile information</h2>
+<section class="profile-main-section">
+     <div class="user-intro-tile">
+        <div class="user-intro-tile-wrapper">
+            <div class="user-intro-tile-wrapper-header">
+            <div class="user-intro-tile-image">
+                <img src="{{request.user.profile.imageURL}}" alt="">
+            </div>
+
+            <div class="user-intro-tile-content">
+                <span id="skill-tag">3d artist {{profile.user.id}}</span>
+                <h1>{{profile.first_name}} {{ profile.last_name}}</h1>
+                <div class="address-container">
+                    <h2>@{{profile.user_name}}</h2>
+                    <div class="address">
+                    <span>{{profile.city}}, {{profile.country}}</span>
+                    <span id="dot"></span>
+                    <span>joined {{ profile.date_joined|date:"F j, Y" }}</span>
+                    <span id="dot"></span>
+                    {% for rs in about_user %}
+                    <span>{{rs.website}}</span>
+                    {% endfor %}
+                    </div>
+                </div>
+                <div class="first-btns-wrapper">
+                    <div class="social_buttons">
+                        <button><a href="">Be</a></button>
+                        <button><a href="">Bt</a></button>
+                        <button><a href=""> <i class="fa fa-linkedin"></i> </a></button>
+                        <button><a href=""> <i class="fa fa-youtube"></i> </a></button>
+                    </div>
+                    <div class="nxt_buttons">
+                        <button><i class="fa fa-heart"></i>follow</button>
+                        {% if request.user.is_authenticated %}
+                        <button><a href="/update_user_profile/{{profile.id}}" style="text-decoration: none; color: white;">Edit Profile</a></button>
+                        {% else %}
+                        {% endif %}
+                        <button>Send Message</button>
+                    </div>
+
+                </div>
+            </div>
+           </div>
+        </div>
+        <div class="user-intro-tile-footer">
+            <div class="user-intro-tile-footer-btns-wrapper">
+            <button class="tab-btn active-btn" >Portfolio</button>
+            <button class="tab-btn">Courses</button>
+            <button class="tab-btn">Edit Profile</button>
+            <button class="tab-btn">Groups</button>
+            <button class="tab-btn">Followers</button>
+        </div>
+        </div>
+    </div>
+
+<section class="tab active-tab" id="portfolio-tab">
+    <h2 style="color: white;">Portfolio Tab</h2>
+    <div class="timeline">
+        <div class="Portfolio">
+            <div class="about">
+                <h2 style="color:white">About Freelancer</h2>
+                <div style="color: white;">
+                    {% for rs in about_user %}
+                    {{rs.bio | linebreaks }}
+                    {% endfor %}
+                </div>
+
+                <h1 style="color: white;">Skills</h1>
+                {% for category in chosen_categories %}
+                <h3 style="color:grey">{{ category.name }}</h3>
+                <ul>
+                    {% for user_skill in user_skills %}
+                        {% if user_skill.skill.category == category %}
+                        <form class="delete-skill-form{{user_skill.id}}" method="POST" action="{% url 'delete_user_skill' skill_id=user_skill.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="skill_id" value="{{ user_skill.id }}">
+                            <li style="color: green" class="skillz{{user_skill.id}}">{{ user_skill.skill.skill }}/{{user_skill.id}}</li>
+                            {% if user_skill.user == request.user %}
+                            <button type="button" class="delete-skill{{user_skill.id}} btn{{user_skill.id}}">x</button>
+                            {% else %}
+
+                            {% endif %}
+                            
+                        </form>
+                        <script>
+                            $(document).ready(function () {
+                                $(".delete-skill{{user_skill.id}}").click(function () {
+                                    var form = $(this).closest('.delete-skill-form{{user_skill.id}}');
+                                    $.ajax({
+                                        type: form.attr('method'),
+                                        url: form.attr('action'),
+                                        data: form.serialize(),
+                                        success: function (data) {
+                                            $(".skillz{{user_skill.id}}").remove();
+                                            $(".btn{{user_skill.id}}").remove();
+                                        },
+                                        error: function (error) {
+                                            console.error("Error deleting skill:", error.responseText);
+                                        }
+                                    });
+                                });
+                            });
+                            </script>
+                        {% endif %}
+                    {% endfor %}
+  
+                </ul>
+            {% endfor %}
+    <h2 style="color:white">Work Experience</h2>
+    {% for rs in user_experience %}
+    <form class="delete-experience-form{{rs.id}}" method="POST" action="{% url 'delete_user_experience' experience_id=rs.id %}">
+        {% csrf_token %}
+        <input type="hidden" name="experience_id" value="{{ rs.id }}">
+<h3 style="color:orangered">{{rs.start_date}} - {{rs.end_date}}</h3>
+<h2 style="color:rgb(243, 243, 243)">{{rs.position_title}}</h2>
+<h3 style="color:grey">{{rs.company}}</h3>
+<p style="color:white">
+    {{rs.description}}
+</p>
+{% if rs.user == request.user %}
+<button type="button" class="delete-experience{{rs.id}} btn{{rs.id}}">Remove experience</button>
+{% else %}
+
+{% endif %}
+</form>
+<script>
+    $(document).ready(function () {
+        $(".delete-experience{{rs.id}}").click(function () {
+            var form = $(this).closest('.delete-experience-form{{rs.id}}');
+            $.ajax({
+                type: form.attr('method'),
+                url: form.attr('action'),
+                data: form.serialize(),
+                success: function (data) {
+                    $(".delete-experience-form{{rs.id}}").remove();
+                },
+                error: function (error) {
+                    console.error("Error deleting experience:", error.responseText);
+                }
+            });
+        });
+    });
+    </script>
+    {% endfor %}
+    <hr>
+            </div>
+            <div class="photos">
+                <h2 style="color: white;">Portfolio</h2>
+                {% for rs in user_portfolio %}
+                <form class="delete-portfolio-form{{rs.id}}" method="POST" action="{% url 'delete_user_portfolio' portfolio_id=rs.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="portfolio_id" value="{{ rs.id }}">
+                <a href="">
+                    <img src="{{rs.imageURL}}" alt="" height="80" width="100">
+                    
+                    <div>
+                        <p>portfolio extra image{{rs.user}}</p>
+                    {% for rs in extra_images  %}
+                        <img src="{{ rs.imageURL }}" alt="EXTRA IMAGE" height="40" width="40">
+                    {% endfor %}
+                    </div>
+                </a>
+                {% if rs.user == request.user %}
+                <button type="button" class="delete-portfolio{{rs.id}} btn{{rs.id}}">Remove</button>
+                {% else %}
+
+                {% endif %}
+                </form>
+                <script>
+                    $(document).ready(function () {
+                        $(".delete-portfolio{{rs.id}}").click(function () {
+                            var form = $(this).closest('.delete-portfolio-form{{rs.id}}');
+                            $.ajax({
+                                type: form.attr('method'),
+                                url: form.attr('action'),
+                                data: form.serialize(),
+                                success: function (data) {
+                                    $(".delete-portfolio-form{{rs.id}}").remove();
+                                },
+                                error: function (error) {
+                                    console.error("Error deleting portfolio:", error.responseText);
+                                }
+                            });
+                        });
+                    });
+                    </script>
+                {% endfor %}
+            </div>
+            <hr>
+            <div class="reviews">
+                <h3 style="color: white;">reviews</h3>
+                {% for rs in user_reviews %}
+                <h4 style="color:orangered">{{rs.reviewer}}</h4>
+                <img src="{{rs.reviewer.profile.imageURL}}" alt="" height="50" width="80">
+                <h4 style="color:orangered">{{rs.created_at|date:"j F, Y"}}</h4>
+                <div style="color: #4CAF50;">
+                     {{rs.text|linebreaks}}
+                </div>
+                {% endfor %}
+            </div>
+            <hr>
+            <div class="comment_form">
+                <h3 style="color: white;">Add review form</h3>
+                <form enctype="multipart/form-data" method="POST" >
+                    {% csrf_token %}
+                    {{ review_form.as_p }}
+                    <input type="hidden" name="target_user" value="{{profile.user.id}}">
+                    <input type="submit">
+                </form>
+                
+
+            </div>
+        </div>
+    </div>
 
 </section>
-<hr>
-<section>
-    <h3>update profile  Info</h3>
-    <form enctype="multipart/form-data" method="POST">
-        {% csrf_token %}
-        {{form.as_p}}
-        <input type="submit">
-        <style>
-            #id_user,
-            label[for="id_user"] {
-                display: none;
-            }
-        </style>
-    </form>
+<!--
+<style>
+    #portfolio-tab{
+        display: flex;
+        width: 100%;
+        align-items: flex-start;
+        gap: 20px;
+}
+    .timeline{
+        display: flex;
+        width: 67%;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+        flex-shrink: 0;
+    }
+
+    .portfolio{
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+        align-self: stretch;
+    }
+    .about{
+        display: flex;
+        width: 780px;
+        padding: 60px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 80px;
+        margin-bottom: 20px;
+        border-radius: 25px;
+        background: var(--design-lab-grey-dark, #2D333C);
+
+    }
+    .photos{
+        display: flex;
+        padding: 60px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+        align-self: stretch;
+        margin-bottom: 20px;
+        border-radius: 25px;
+        background: var(--design-lab-grey-dark, #2D333C);
+    }
+    .reviews{
+        display: flex;
+        padding: 60px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 80px;
+        margin-bottom: 20px;
+        align-self: stretch;
+        border-radius: 25px;
+        background: var(--design-lab-grey-dark, #2D333C);
+
+    }
+    .comment_form{
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 20px;
+        align-self: stretch;
+        border-radius: 25px;
+        background: var(--design-lab-grey-dark, #2D333C);
+    }
+</style>-->
+<section class="tab">
+<h6 style="color: white;">courses</h6>
 </section>
+<section class="tab">
+
+</section>
+<section class="tab">
+<h6 style="color: white;">groups</h6>
+</section>
+<section class="tab">
+    <h6 style="color: white;">followers</h6>
+</section>
+
+</section>
+
 {% endblock %}

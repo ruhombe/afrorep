@@ -1,5 +1,11 @@
 {% extends 'main.html' %}
 {% load static %}
 {% block content %}
-<h1>welcome home</h1>  
+<h1 style="color: white;">welcome home</h1>
+<h1>User Profiles</h1>
+<ul>
+    {% for profile in profiles %}
+        <li><a style="color:white" href="{% url 'profile' profile.id %}">{{ profile.username }}</a></li>
+    {% endfor %}
+</ul>
 {% endblock %}

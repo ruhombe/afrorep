@@ -1,0 +1,139 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+<h3 style="color: aliceblue;">Update Profile Information</h3>
+<div>
+    <h3 style="color: orangered;">Personal info</h3>
+    <form enctype="multipart/form-data" method="POST" id="user_info">
+        {% csrf_token %}
+        {{form.as_p}}
+        <input type="submit"  name="profile">
+        <style>
+            #id_user,
+            label[for="id_user"] {
+                display: none;
+            }
+        </style>
+    </form>
+</div>
+<hr>
+<div>
+    <h3 style="color: orangered;">About info</h3>
+    <form enctype="multipart/form-data" method="POST">
+        {% csrf_token %}
+        {{about_form.as_p}}
+        <input type="submit" name="about">
+    </form>
+</div>
+<hr>
+<div>
+    <h3 style="color: orangered;">experinece</h3>
+    <div>
+        {% for rs in experiences %}
+        <h3 style="color:white;">{{rs.position_title}}</h3>
+        <h3 style="color:white">{{rs.comapny}}</h3>
+        <p style="color:white">{{rs.description}}</p>
+        <h3 style="color:white">{{rs.start_date}}</h3>
+        <h3 style="color:white">{{rs.end_date}} {{rs.id}}</h3>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit">Delete Experience</button>
+        </form>
+        {% endfor %}
+
+    </div>
+    <form enctype="multipart/form-data" method="POST">
+        {% csrf_token %}
+        {{experience_form.as_p}}
+        <input type="submit" name="experience">
+    </form>
+</div>
+<hr>
+<div>
+    <h3 style="color: orangered;">Add a Portfolio</h3>
+    <div>
+        {% for rs in portfolios %}
+        <h3 style="color:white;">{{rs.title}}</h3>
+        <h3 style="color:white">{{rs.description}}</h3>
+        <img src="{{rs.imageURL}}" alt="" height="80" width="100">
+        <h3 style="color:white">{{rs.image.id}}</h3>
+        <form method="post" action="{% url 'delete_user_portfolio' portfolio_id=rs.id %}">
+            {% csrf_token %}
+            <button type="submit">Delete Portfolio</button>
+        </form>
+        {% endfor %}
+    </div>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ portfolio_form.as_p }}  
+        {{ portfolio_image_formset.management_form }}
+        <h2>Add extra images</h2>
+        {% for form in portfolio_image_formset %}
+          {{ form.as_p }}
+        {% endfor %}      
+        <button type="submit" name="portfolio">Save Portfolio and Images</button>
+    </form>
+</div>
+
+<div>
+    <div>
+    <h6>user skills</h6>
+    
+    </div>
+    <h1>Add skills</h1>
+    <form method="post" action="{% url 'handle_skill_selection' %}">
+        {% csrf_token %}
+    
+        {% for category in skill_categories %}
+            <h3 style="color: orangered;">{{ category.name }}</h3>
+    
+            {% if category.skills_set.all %}
+                <ul>
+                    {% for skill in category.skills_set.all %}
+                        <li>
+                            <label>
+                                <input type="checkbox" name="selected_skills" value="{{ skill.id }}">
+                                <span style="color: white">{{ skill.skill }}</span>
+                            </label>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+    
+            {% if category.subcategories.all %}
+                <ul>
+                    {% for subcategory in category.subcategories.all %}
+                        <li>
+                            <h4 style="color: #4CAF50;">{{ subcategory.name }}</h4>
+                            <ul>
+                                {% for skill in subcategory.skills_set.all %}
+                                    <li>
+                                        <label>
+                                            <input type="checkbox" name="selected_skills" value="{{ skill.id }}">
+                                            <span style="color: white">{{ skill.skill }}</span>
+                                        </label>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endfor %}
+    
+        <button type="submit">Submit</button>
+    </form>
+
+</div>
+<hr>
+<style>
+    div{
+        color:white
+    }.helptext{
+        display:none
+    }#id_password{
+        display:none
+    }
+
+</style>
+{% endblock %}

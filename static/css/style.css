@@ -1,0 +1,13 @@
+body{
+    margin: 0;
+    background-color: #0E1218;
+}
+
+header{
+    padding: 1%;
+    background-color: black;
+    border-bottom: 1px solid grey;
+}
+header a{
+    color:rgb(227, 227, 227);
+}
